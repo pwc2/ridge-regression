@@ -131,7 +131,7 @@ class LinearModel:
 
             # Check for convergence using the norm of the difference in current and previous gradients
             if norm_diff < eps:
-                print('\nConvergence achieved with epsilon = ' + str(eps) + ' in ' + str(iteration) + ' iterations.\n')
+                print('\nConvergence achieved with epsilon = ' + str(eps) + ' in ' + str(iteration) + ' iterations.')
                 converge = True
                 break
 
