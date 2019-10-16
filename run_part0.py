@@ -5,13 +5,15 @@
     Date last modified: 10/15/2019
     Python Version: 3.7
 
-    Pre-processes data to create cleaned DataFrames, which are then used to create one-hot-encoded non-normalized
+    Preprocesses data to create cleaned DataFrames, which are then used to create one-hot-encoded non-normalized
     DataFrames, as well as one-hot-encoded normalized DataFrames. All saved as .pkl files in /data.
 """
 
 from preprocess import preprocess, tables
 
 # Pre-processing - Part 0.
+
+print('\nPart 0: Initializing preprocessing...')
 
 # Clean
 preprocess.clean('data/PA1_train.csv')
@@ -29,3 +31,5 @@ preprocess.normalize('data/PA1_train.pkl', 'data/PA1_test.pkl', 'data/PA1_dev.pk
 preprocess.one_hot_encode('data/PA1_train.pkl')
 preprocess.one_hot_encode('data/PA1_dev.pkl')
 preprocess.one_hot_encode('data/PA1_test.pkl')
+
+print('Completed preprocessing.\n')

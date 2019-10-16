@@ -6,6 +6,7 @@
     Date last modified: 10/15/2019
     Python Version: 3.7
 
-    Run python main.py to execute pre-processing, training with normalization but no regularization, training with both
-    normalization and regularization, and training without normalization or regularization.
+    Run python main.py to execute pre-processing (part 0), training with normalization but no regularization (part 1),
+    training with both normalization and regularization (part 2), and training without normalization or
+    regularization (part 3).
 """

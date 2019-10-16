@@ -18,6 +18,8 @@ import numpy as np
 
 from models.linear_model import LinearModel
 
+print('Part 1: Initializing training without regularization.')
+
 # Ignore overflows from learning rates with exploding gradient
 np.seterr(all='ignore')
 
@@ -42,6 +44,9 @@ for rate in rates:
     train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
     with open(train_path, 'w') as f:
         json.dump(learned_model, f, indent=4)
+
+print('Training complete.')
+print('Calculating predictions on validation set...')
 
 # Get predictions and SSE on validation set for rates that didn't explode
 working_rates = [10 ** -x for x in range(5, 8)]
@@ -70,3 +75,6 @@ for working_rate in working_rates:
     dev_path = train_path.with_name(dev_filename)
     with open(dev_path, 'w') as f:
         json.dump(predictions, f, indent=4)
+
+print('Predictions complete.')
+print('Part 1 complete.\n')

@@ -18,6 +18,8 @@ import numpy as np
 
 from models.linear_model import LinearModel
 
+print('Part 2: Initializing training with regularization.')
+
 # Ignore overflows from learning rates with exploding gradient
 np.seterr(all='ignore')
 
@@ -37,12 +39,16 @@ for rate in rates:
 
         learned_model = model.train_model(max_iter=20000)
 
+        print('Training complete.')
+
         # Save output for learned model to .json file
         train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam)) + '_train.json'
         my_path = pathlib.Path('model_output', 'part_2', train_filename)
         train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
         with open(train_path, 'w') as f:
             json.dump(learned_model, f, indent=4)
+
+        print('Calculating predictions on validation set...')
 
         # Grab weights to input to prediction method
         weights = learned_model['weights']
@@ -53,3 +59,7 @@ for rate in rates:
         dev_path = train_path.with_name(dev_filename)
         with open(dev_path, 'w') as f:
             json.dump(predictions, f, indent=4)
+
+        print('Predictions complete.')
+
+print('Part 2 complete.\n')
