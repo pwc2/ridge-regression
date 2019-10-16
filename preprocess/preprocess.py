@@ -121,7 +121,7 @@ def normalize(train, test, validation):
     # Drop reference category that somehow shows up in validation set
     norm_df_validation.drop(labels='grade_4', axis=1, inplace=True)
 
-    # Drop price that showed up in test set? TODO
+    # Drop price if in test set
     if 'price' in norm_df_test:
         norm_df_test.drop(labels='price', axis=1, inplace=True)
 

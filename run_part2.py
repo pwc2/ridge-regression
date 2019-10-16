@@ -45,6 +45,10 @@ for rate in rates:
         train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam)) + '_train.json'
         my_path = pathlib.Path('model_output', 'part_2', train_filename)
         train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
+
+        # Create directory if doesn't exist
+        if not pathlib.Path(train_path).exists():
+            pathlib.Path(train_path).mkdir()
         with open(train_path, 'w') as f:
             json.dump(learned_model, f, indent=4)
 
@@ -57,6 +61,10 @@ for rate in rates:
         # Output for predictions and SSE for validation set
         dev_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam)) + '_dev.json'
         dev_path = train_path.with_name(dev_filename)
+
+        # Create directory if doesn't exist
+        if not pathlib.Path(dev_path).exists():
+            pathlib.Path(dev_path).mkdir()
         with open(dev_path, 'w') as f:
             json.dump(predictions, f, indent=4)
 

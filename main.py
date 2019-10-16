@@ -10,3 +10,11 @@
     training with both normalization and regularization (part 2), and training without normalization or
     regularization (part 3).
 """
+
+import run_part0
+
+import run_part1
+
+import run_part2
+
+import run_part3
