@@ -44,9 +44,11 @@ for rate in rates:
     my_path = pathlib.Path('model_output', 'part_3', train_filename)
     train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
-    # Create directory if doesn't exist
-    if not pathlib.Path(train_path).exists():
-        pathlib.Path(train_path).mkdir()
+    # Make output directory if doesn't exist
+    output_dir = train_path.parent.resolve()
+    if not pathlib.Path(output_dir).exists():
+        pathlib.Path(output_dir).mkdir()
+
     with open(train_path, 'w') as f:
         json.dump(learned_model, f, indent=4)
 
@@ -60,9 +62,6 @@ for rate in rates:
     dev_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_dev.json'
     dev_path = train_path.with_name(dev_filename)
 
-    # Create directory if doesn't exist
-    if not pathlib.Path(dev_path).exists():
-        pathlib.Path(dev_path).mkdir()
     with open(dev_path, 'w') as f:
         json.dump(predictions, f, indent=4)
 

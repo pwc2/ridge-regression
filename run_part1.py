@@ -36,54 +36,38 @@ for rate in rates:
                         lam=0,
                         eps=0.5)
 
-    learned_model = model.train_model(max_iter=10000)
+    learned_model = model.train_model(max_iter=20000)
+
+    print('Training complete.')
 
     # Save output for learned model to .json file
     train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_train.json'
     my_path = pathlib.Path('model_output', 'part_1', train_filename)
     train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
-    # Create directory if doesn't exist
-    if not pathlib.Path(train_path).exists():
-        pathlib.Path(train_path).mkdir()
-    with open(train_path) as f:
-        json.dump(learned_model, f, indent=4)
-
-print('Training complete.')
-print('Calculating predictions on validation set...')
-
-# Get predictions and SSE on validation set for rates that didn't explode
-working_rates = [10 ** -x for x in range(5, 8)]
-for working_rate in working_rates:
-    model = LinearModel(train='data/PA1_train_norm.pkl',
-                        validation='data/PA1_dev_norm.pkl',
-                        test='data/PA1_test_norm.pkl',
-                        target='price',
-                        rate=working_rate,
-                        lam=0,
-                        eps=0.5)
-
-    # Open learned model to extract training weights
-    train_filename = 'rate_' + str('{:.0E}'.format(working_rate)) + '_train.json'
-    my_path = pathlib.Path('model_output', 'part_1', train_filename)
-    train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
+    # Make output directory if doesn't exist
+    output_dir = train_path.parent.resolve()
+    if not pathlib.Path(output_dir).exists():
+        pathlib.Path(output_dir).mkdir()
 
     with open(train_path, 'w') as f:
-        learned_model = json.load(f)
+        json.dump(learned_model, f, indent=4)
 
-    # Grab weights to input to prediction method
-    weights = learned_model['weights']
-    predictions = model.predict_validation(weights)
+    # If gradient didn't explode, get predictions on validation set
+    if learned_model['exploding'] is False:
+        print('Calculating predictions on validation set...')
 
-    # Output for predictions and SSE for validation set
-    dev_filename = 'rate_' + str('{:.0E}'.format(working_rate)) + '_dev.json'
-    dev_path = train_path.with_name(dev_filename)
+        # Grab weights to input to prediction method
+        weights = learned_model['weights']
+        predictions = model.predict_validation(weights)
 
-    # Create directory if doesn't exist
-    if not pathlib.Path(dev_path).exists():
-        pathlib.Path(dev_path).mkdir()
-    with open(dev_path, 'w') as f:
-        json.dump(predictions, f, indent=4)
+        # Output for predictions and SSE for validation set
+        dev_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_dev.json'
+        dev_path = train_path.with_name(dev_filename)
 
-print('Predictions complete.')
+        with open(dev_path, 'w') as f:
+            json.dump(predictions, f, indent=4)
+
+        print('Predictions complete.')
+
 print('Part 1 complete.\n')
