@@ -37,7 +37,7 @@ for rate in rates:
 
     learned_model = model.train_model(max_iter=10000)
 
-    print('Training complete.')
+    print('Training complete.\n')
 
     # Save output for learned model to .json file
     train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_train.json'
