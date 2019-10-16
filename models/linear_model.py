@@ -139,13 +139,15 @@ class LinearModel:
         if iter_count == max_iter:
             print('Maximum iterations reached without convergence.\n')
 
+        labeled_weights = dict(zip(weight_labels, weights.tolist()))
+
         results = {'lam': lam,
                    'learn_rate': rate,
                    'epsilon': eps,
                    'iterations': iter_count,
                    'convergence': converge,
                    'exploding': exploding_grad,
-                   'labeled_weights': weight_labels,
+                   'labeled_weights': labeled_weights,
                    'weights': weights.tolist(),
                    'sse': sse_list,
                    'gradient_norm_diff': norm_list}
