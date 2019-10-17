@@ -125,7 +125,7 @@ class LinearModel:
 
             # Check for divergence with the norm of the gradient to see if exploding
             if np.isinf(norm_diff):
-                print('\nGradient exploding.\n')
+                print('\nGradient exploding.')
                 exploding_grad = True
                 break
 
