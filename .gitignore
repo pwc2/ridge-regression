@@ -2,3 +2,10 @@
 /PA1-Database- Description.pdf
 /model_output/scratch/
 .idea
+/logs/
+/output.txt
+.Rproj.user
+/.Rhistory
+/Report.pdf
+/Report.Rmd
+/ridge-regression.Rproj
