@@ -11,10 +11,3 @@
     regularization (part 3).
 """
 
-import run.run_part0
-
-import run.run_part1
-
-import run.run_part2
-
-import run.run_part3

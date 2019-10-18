@@ -28,15 +28,16 @@ np.seterr(all='ignore')
 # Train model using each learning rate, save each training output to model_output/part_1 folder.
 rates = [10 ** -x for x in range(8)]
 for rate in rates:
-    model = LinearModel(train='data/PA1_train_norm.pkl',
-                        validation='data/PA1_dev_norm.pkl',
-                        test='data/PA1_test_norm.pkl',
+    model = LinearModel(train='data/PA1_train.pkl',
+                        validation='data/PA1_dev.pkl',
+                        test='data/PA1_test.pkl',
                         target='price',
                         rate=rate,
                         lam=0,
-                        eps=0.5)
+                        eps=0.5,
+                        normalize=True)
 
-    learned_model = model.train_model(max_iter=20000)
+    learned_model = model.train_model(max_iter=150000)
 
     print('Training complete.\n')
 
