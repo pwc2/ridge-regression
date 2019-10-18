@@ -142,7 +142,6 @@ class LinearModel:
         for iteration in bar(range(max_iter)):
             # Calculate gradient and update weights
             current_grad = calc_gradient(x, y, weights)
-
             weights = gradient_descent(current_grad, weights, rate, lam)
 
             # Calculate sum of squared error for each iteration to store in list
