@@ -9,10 +9,12 @@
 import pickle
 
 import numpy as np
+import pandas as pd
 import progressbar
+from sklearn.preprocessing import MinMaxScaler
+from preprocess import preprocess
 
 from models.gradient_descent import calc_sse, calc_predictions, calc_gradient, gradient_descent
-from preprocess import preprocess
 
 
 class LinearModel:
@@ -35,16 +37,16 @@ class LinearModel:
             normalize (bool): Indicator for whether or not data should be normalized, default is True.
         """
         with open(train, 'rb') as train_pkl:
-            check_train = pickle.load(train_pkl).drop(target, axis=1)
-        train_cols = check_train.columns.to_list()
+            self.train = pickle.load(train_pkl)
+        train_cols = self.train.drop(target, axis=1).columns.to_list()
 
         with open(validation, 'rb') as validation_pkl:
-            check_val = pickle.load(validation_pkl).drop(target, axis=1)
-        validation_cols = check_val.columns.to_list()
+            self.validation = pickle.load(validation_pkl)
+        validation_cols = self.validation.drop(target, axis=1).columns.to_list()
 
         with open(test, 'rb') as test_pkl:
-            check_test = pickle.load(test_pkl)
-        test_cols = check_test.columns.to_list()
+            self.test = pickle.load(test_pkl)
+        test_cols = self.test.columns.to_list()
 
         # Check that columns for train, validation, and test in same order.
         assert np.array_equal(train_cols, validation_cols), 'Train and validation columns not in same order.'
@@ -55,27 +57,33 @@ class LinearModel:
         self.rate = rate
         self.lam = lam
         self.eps = eps
+        self.normalize = normalize
 
-        # Get min and max from training set for normalization
-        self.train_min = check_train.min()
-        self.train_max = check_train.max()
+        # Get targets, and min and max targets from training set for target back-transformation after normalizing
+        self.train_targets = self.train[target]
+        self.validation_targets = self.validation[target]
+        self.train_target_max = self.train_targets.max()
+        self.train_target_min = self.train_targets.min()
 
+        # Get training max and min to rescale features
+        train_max = self.train.max()
+        train_min = self.train.min()
+
+        # Normalize all features and targets if required
         if normalize is True:
-            self.train = preprocess.normalize(train, self.train_max, self.train_min, self.target)
-            self.validation = preprocess.normalize(validation, self.train_max, self.train_min, self.target)
-            self.test = preprocess.normalize(test, self.train_max, self.train_min, self.target)
+            self.train = preprocess.normalize(train, train_max, train_min, self.target)
+            self.validation = preprocess.normalize(validation, train_max, train_min, self.target)
+            self.test = preprocess.normalize(test, train_max, train_min, self.target)
+            # scaler = MinMaxScaler()
+            # scaled_train = scaler.fit_transform(self.train[train_cols])
+            # scaled_validation = scaler.transform(self.validation[train_cols])
+            # scaled_test = scaler.transform(self.test[train_cols])
+            #
+            # self.train = pd.DataFrame(scaled_train, columns=train_cols).assign(dummy=1)
+            # self.validation = pd.DataFrame(scaled_validation, columns=validation_cols).assign(dummy=1)
+            # self.test = pd.DataFrame(scaled_test, columns=test_cols).assign(dummy=1)
 
-        self.train_labels = self.train[target]
-        self.validation_labels = self.validation[target]
-
-    def get_weight_labels(self):
-        """Retrieves labels for model weights.
-
-        Returns:
-            list of str: List of weight labels.
-        """
-        x = self.train.drop(self.target, axis=1)
-        return x.columns.tolist()
+        self.weight_labels = self.train.columns.to_list()
 
     def train_model(self, max_iter):
         """Trains model with batch gradient descent to optimize weights.
@@ -94,11 +102,15 @@ class LinearModel:
         """
         # Training set and labels
         x = self.train.drop(self.target, axis=1).to_numpy(dtype=np.float64)
-        y = self.train_labels.to_numpy(dtype=np.float64)
+        y = self.train_targets.to_numpy(dtype=np.float64)
 
         # Validation set and labels
         x_val = self.validation.drop(self.target, axis=1).to_numpy(dtype=np.float64)
-        y_val = self.validation_labels.to_numpy(dtype=np.float64)
+        y_val = self.validation_targets.to_numpy(dtype=np.float64)
+
+        # Rescale target based on training, use these to rescale predictions
+        y = (y - y.min()) / (y.max() - y.min())
+        y_val = (y_val - y.min()) / (y.max() - y.min())
 
         rate = self.rate
         lam = self.lam
@@ -110,7 +122,7 @@ class LinearModel:
         # Initialize random weights in sampled from uniform [0, 1) distribution
         weights = np.random.rand(np.size(x, axis=1))
 
-        print('Learning rate = ' + str(rate) + ', penalty = ' + str(lam) + ', epsilon = ' + str(eps))
+        print('Learning rate = ' + str(rate) + ', penalty = ' + str(lam) + ', epsilon = ' + str(eps) + '.')
 
         # Shape of x[i] is (22, ), shape of y[i] is (1), shape of weights * x[i] - y[i] is (1), shape of grad is (22, ).
         print('Optimizing weights...')
@@ -130,6 +142,7 @@ class LinearModel:
         for iteration in bar(range(max_iter)):
             # Calculate gradient and update weights
             current_grad = calc_gradient(x, y, weights)
+
             weights = gradient_descent(current_grad, weights, rate, lam)
 
             # Calculate sum of squared error for each iteration to store in list
@@ -141,6 +154,9 @@ class LinearModel:
             norm_list.append(grad_norm)
 
             iter_count += 1
+
+            # if iter_count % 100 == 0:
+            #     print('\n' + str(grad_norm))
 
             # Check for divergence with the norm of the gradient to see if exploding
             if np.isinf(grad_norm):
@@ -187,7 +203,7 @@ class LinearModel:
         """
         lam = self.lam
         x = self.validation.drop(self.target, axis=1).to_numpy(dtype=np.float64)
-        y = self.validation_labels.to_numpy(dtype=np.float64)
+        y = self.validation_targets.to_numpy(dtype=np.float64)
         predictions = calc_predictions(x, weights)
         sse = calc_sse(x, y, weights, lam)
         results = {'lam': lam,
@@ -196,7 +212,7 @@ class LinearModel:
         return results
 
     def predict_test(self, weights):
-        """Generates predictions for unlabeled test data.
+        """Generates predictions for unlabeled test data, transformed back to original scale.
 
         Args:
             weights (ndarray): (, n) ndarray of weights produced from training.
@@ -205,8 +221,11 @@ class LinearModel:
             results (dict): Dictionary with lam (regularization parameter) and predictions (list of predictions).
         """
         lam = self.lam
+        max_train = self.train_target_max
+        min_train = self.train_target_min
         x = self.test.to_numpy(dtype=np.float64)
-        predictions = calc_predictions(x, weights)
+        scaled_predictions = calc_predictions(x, weights)
+        predictions = [(max_train - min_train) * i + min_train for i in scaled_predictions]
         results = {'lam': lam,
                    'predictions': predictions}
         return results

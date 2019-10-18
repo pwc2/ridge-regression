@@ -33,7 +33,8 @@ for rate in rates:
                         target='price',
                         rate=rate,
                         lam=0,
-                        eps=0.5)
+                        eps=0.5,
+                        normalize=False)
 
     learned_model = model.train_model(max_iter=10000)
 

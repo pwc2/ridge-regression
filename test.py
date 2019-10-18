@@ -18,17 +18,17 @@ model = LinearModel(train='data/PA1_train.pkl',
                     validation='data/PA1_dev.pkl',
                     test='data/PA1_test.pkl',
                     target='price',
-                    rate=10 ** -5,
+                    rate=1e-05,
                     lam=0,
                     eps=0.5,
                     normalize=True)
 
-names = model.get_weight_labels()
-learned_model = model.train_model(10)
+names = model.weight_labels
+learned_model = model.train_model(2)
 val_predictions = model.predict_validation(learned_model['weights'])['predictions']
 test_predictions = model.predict_test((learned_model['weights']))['predictions']
 
-pp.pprint(learned_model)
+# pp.pprint(learned_model)
 
 # print(dict(zip(names, learned_model['weights'])))
 pp.pprint(val_predictions[:10])

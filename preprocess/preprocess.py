@@ -81,14 +81,17 @@ def normalize(pickled_df, train_max, train_min, target):
     # Normalize data set based on training set, reassign 1 to dummy, and make sure dummy is first column
     norm_df = df.sub(train_min).div(train_range).assign(dummy=1).set_index('dummy').reset_index()
 
-    # Add back in target column for prediction if necessary
+    # Add back in target column for prediction if necessary, drop blank column from test set
     if target_col is not None:
         norm_df[target] = target_col
+    else:
+        norm_df.drop(target, axis=1, inplace=True)
 
-    # Save normalized DataFrame as pickled object
+    # Save normalized DataFrame as pickled object if it doesn't exist yet
     my_path = pathlib.Path(pickled_df).resolve()
     filename = my_path.stem
     out_path = my_path.with_name(filename + '_norm.pkl')
-    with open(out_path, 'wb') as f:
-        pickle.dump(norm_df, f, pickle.HIGHEST_PROTOCOL)
+    if not pathlib.Path(out_path).exists():
+        with open(out_path, 'wb') as f:
+            pickle.dump(norm_df, f, pickle.HIGHEST_PROTOCOL)
     return norm_df

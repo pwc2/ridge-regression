@@ -26,7 +26,8 @@ np.seterr(all='ignore')
 # Training - Part 2, adjusting regularization parameter to investigate effect on the model.
 
 rates = [10 ** -x for x in range(5, 8)]
-lambdas = sorted([10 ** x for x in range(-3, 3)] + [0])
+# rates = [10 ** -x for x in range(8)]
+lambdas = sorted([10 ** x for x in range(-3, 3)] + [0])[4:]
 for rate in rates:
     for lam in lambdas:
         model = LinearModel(train='data/PA1_train_norm.pkl',
@@ -35,7 +36,8 @@ for rate in rates:
                             target='price',
                             rate=rate,
                             lam=lam,
-                            eps=0.5)
+                            eps=0.5,
+                            normalize=True)
 
         learned_model = model.train_model(max_iter=20000)
 
