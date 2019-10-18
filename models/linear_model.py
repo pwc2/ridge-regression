@@ -170,7 +170,7 @@ class LinearModel:
                    'weights': weights.tolist(),
                    'train_sse': train_sse,
                    'validation_sse': val_sse,
-                   'gradient_norm_diff': norm_list}
+                   'gradient_norm': norm_list}
         return results
 
     def predict_validation(self, weights):
