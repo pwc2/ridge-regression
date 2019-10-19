@@ -37,7 +37,7 @@ for rate in rates:
                         eps=0.5,
                         normalize=False)
 
-    learned_model = model.train_model(max_iter=2)
+    learned_model = model.train_model(max_iter=10000)
 
     print('Training complete.')
 
