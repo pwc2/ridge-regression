@@ -7,7 +7,7 @@
 
     Used to run linear regression without L2 regularization penalty for given learning rates.
     Trains model on training set, makes predictions and calculates sum-of-squared error on validation set.
-    Using non-normalized data sets here.
+    Features and targets not normalized.
     Outputs model results to /model_output/part_3.
 """
 

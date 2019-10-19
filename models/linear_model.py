@@ -2,7 +2,7 @@
     File name: linear_model.py
     Author: Patrick Cummings
     Date created: 10/13/2019
-    Date last modified: 10/15/2019
+    Date last modified: 10/18/2019
     Python Version: 3.7
 """
 
@@ -12,7 +12,8 @@ import numpy as np
 import pandas as pd
 import progressbar
 from sklearn.preprocessing import MinMaxScaler
-from preprocess import preprocess
+# from preprocess import preprocess
+import pathlib
 
 from models.gradient_descent import calc_sse, calc_predictions, calc_gradient, gradient_descent
 
@@ -59,21 +60,55 @@ class LinearModel:
         self.eps = eps
         self.normalize = normalize
 
-        # Get targets, and min and max targets from training set for target back-transformation after normalizing
+        # Extract features and targets from train, validation, and test sets
+        self.train_features = self.train.drop(target, axis=1)
         self.train_targets = self.train[target]
+
+        self.validation_features = self.validation.drop(target, axis=1)
         self.validation_targets = self.validation[target]
-        self.train_target_max = self.train_targets.max()
-        self.train_target_min = self.train_targets.min()
 
-        # Get training max and min to rescale features
-        train_max = self.train.max()
-        train_min = self.train.min()
+        self.test_features = self.test
 
-        # Normalize all features and targets if required
-        if normalize is True:
-            self.train = preprocess.normalize(train, train_max, train_min, self.target)
-            self.validation = preprocess.normalize(validation, train_max, train_min, self.target)
-            self.test = preprocess.normalize(test, train_max, train_min, self.target)
+
+
+        if self.normalize is True:
+            # Extract min, max, and range for training features
+            self.train_feature_max = self.train_features.max()
+            self.train_feature_min = self.train_features.min()
+            self.train_feature_range = self.train_feature_max - self.train_feature_min
+            # Normalize all features wrt to training set
+            self.train_features = (self.train_features - self.train_feature_min) / self.train_feature_range
+            self.validation_features = (self.validation_features - self.train_feature_min) / self.train_feature_range
+            self.test_features = (self.test_features - self.train_feature_min) / self.train_feature_range
+
+            # Extract min, max, and range for training targets
+            self.train_target_max = self.train_targets.max()
+            self.train_target_min = self.train_targets.min()
+            self.train_target_range = self.train_target_max - self.train_target_min
+            # Normalize all targets wrt to training targets
+            self.train_targets = (self.train_targets - self.train_target_min) / self.train_target_range
+            self.validation_targets = (self.validation_targets - self.train_target_min) / self.train_target_range
+
+            # Reset dummy variable for intercept to 1
+            self.train_features = self.train_features.assign(dummy=1).set_index('dummy').reset_index()
+            self.validation_features = self.validation_features.assign(dummy=1).set_index('dummy').reset_index()
+            self.test_features = self.test_features.assign(dummy=1).set_index('dummy').reset_index()
+
+            # Save to .csv to check normalization if desired
+            my_path = pathlib.Path(__file__).parent.joinpath(pathlib.Path('../data')).resolve()
+            out_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
+
+            self.train_features.to_csv(out_path.joinpath(pathlib.Path('norm_train_x.csv')))
+            self.validation_features.to_csv(out_path.joinpath(pathlib.Path('norm_dev_x.csv')))
+            self.test_features.to_csv(out_path.joinpath(pathlib.Path('norm_test_x.csv')))
+
+            self.train_targets.to_csv(out_path.joinpath(pathlib.Path('norm_train_y.csv')),header = self.target)
+            self.validation_targets.to_csv(out_path.joinpath(pathlib.Path('norm_dev_y.csv')), header=self.target)
+
+
+            # self.train = preprocess.normalize(train, train_max, train_min, self.target)
+            # self.validation = preprocess.normalize(validation, train_max, train_min, self.target)
+            # self.test = preprocess.normalize(test, train_max, train_min, self.target)
             # scaler = MinMaxScaler()
             # scaled_train = scaler.fit_transform(self.train[train_cols])
             # scaled_validation = scaler.transform(self.validation[train_cols])
@@ -101,16 +136,20 @@ class LinearModel:
             gradient between iterations).
         """
         # Training set and labels
-        x = self.train.drop(self.target, axis=1).to_numpy(dtype=np.float64)
-        y = self.train_targets.to_numpy(dtype=np.float64)
+        # x = self.train.drop(self.target, axis=1).to_numpy(dtype=np.float64)
+        # y = self.train_targets.to_numpy(dtype=np.float64)
+        x_train = self.train_features.to_numpy(dtype=np.float64)
+        y_train = self.train_targets.to_numpy(dtype=np.float64)
 
         # Validation set and labels
-        x_val = self.validation.drop(self.target, axis=1).to_numpy(dtype=np.float64)
+        # x_val = self.validation.drop(self.target, axis=1).to_numpy(dtype=np.float64)
+        # y_val = self.validation_targets.to_numpy(dtype=np.float64)
+        x_val = self.validation_features.to_numpy(dtype=np.float64)
         y_val = self.validation_targets.to_numpy(dtype=np.float64)
 
         # Rescale target based on training, use these to rescale predictions
-        y = (y - y.min()) / (y.max() - y.min())
-        y_val = (y_val - y.min()) / (y.max() - y.min())
+        # y = (y - y.min()) / (y.max() - y.min())
+        # y_val = (y_val - y.min()) / (y.max() - y.min())
 
         rate = self.rate
         lam = self.lam
@@ -119,8 +158,8 @@ class LinearModel:
 
         print('Initializing training...')
 
-        # Initialize random weights in sampled from uniform [0, 1) distribution
-        weights = np.random.rand(np.size(x, axis=1))
+        # Initialize random weights sampled from uniform [0, 1) distribution
+        weights = np.random.rand(np.size(x_train, axis=1))
 
         print('Learning rate = ' + str(rate) + ', penalty = ' + str(lam) + ', epsilon = ' + str(eps) + '.')
 
@@ -141,11 +180,11 @@ class LinearModel:
         # Perform batch gradient descent to optimize weights
         for iteration in bar(range(max_iter)):
             # Calculate gradient and update weights
-            current_grad = calc_gradient(x, y, weights)
+            current_grad = calc_gradient(x_train, y_train, weights)
             weights = gradient_descent(current_grad, weights, rate, lam)
 
             # Calculate sum of squared error for each iteration to store in list
-            train_sse.append(calc_sse(x, y, weights, lam))
+            train_sse.append(calc_sse(x_train, y_train, weights, lam))
             val_sse.append(calc_sse(x_val, y_val, weights, lam))
 
             # Calculate norm of gradient to monitor for convergence
@@ -201,17 +240,19 @@ class LinearModel:
             and SSE (SSE for predictions).
         """
         lam = self.lam
-        x = self.validation.drop(self.target, axis=1).to_numpy(dtype=np.float64)
-        y = self.validation_targets.to_numpy(dtype=np.float64)
-        predictions = calc_predictions(x, weights)
-        sse = calc_sse(x, y, weights, lam)
+        # x = self.validation.drop(self.target, axis=1).to_numpy(dtype=np.float64)
+        # y = self.validation_targets.to_numpy(dtype=np.float64)
+        x_val = self.validation_features.to_numpy(dtype=np.float64)
+        y_val = self.validation_targets.to_numpy(dtype=np.float64)
+        predictions = calc_predictions(x_val, weights)
+        sse = calc_sse(x_val, y_val, weights, lam)
         results = {'lam': lam,
                    'SSE': sse,
                    'predictions': predictions}
         return results
 
     def predict_test(self, weights):
-        """Generates predictions for unlabeled test data, transformed back to original scale.
+        """Generates predictions for unlabeled test data, transformed back to original scale if necessary.
 
         Args:
             weights (ndarray): (, n) ndarray of weights produced from training.
@@ -220,11 +261,14 @@ class LinearModel:
             results (dict): Dictionary with lam (regularization parameter) and predictions (list of predictions).
         """
         lam = self.lam
-        max_train = self.train_target_max
-        min_train = self.train_target_min
-        x = self.test.to_numpy(dtype=np.float64)
-        scaled_predictions = calc_predictions(x, weights)
-        predictions = [(max_train - min_train) * i + min_train for i in scaled_predictions]
+        # max_train = self.train_target_max
+        # min_train = self.train_target_min
+        x_test = self.test.to_numpy(dtype=np.float64)
+        predictions = calc_predictions(x_test, weights)
+        if self.normalize is True:
+            target_range = self.train_target_range
+            target_min = self.train_target_min
+            predictions = [target_range * pred + target_min for pred in predictions]
         results = {'lam': lam,
                    'predictions': predictions}
         return results

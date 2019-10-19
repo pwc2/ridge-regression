@@ -2,11 +2,11 @@
     File name: run_part0.py
     Author: Patrick Cummings
     Date created: 10/13/2019
-    Date last modified: 10/15/2019
+    Date last modified: 10/18/2019
     Python Version: 3.7
 
-    Preprocesses data to create cleaned DataFrames, which are then used to create one-hot-encoded non-normalized
-    DataFrames, as well as one-hot-encoded normalized DataFrames. All saved as .pkl files in /data.
+    Preprocesses data to create cleaned DataFrames, which are used in LinearModel constructor.
+    Cleaned DataFrames saved as .pkl files in /data.
 """
 
 from preprocess import preprocess, tables

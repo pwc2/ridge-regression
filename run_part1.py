@@ -2,12 +2,12 @@
     File name: run_part1.py
     Author: Patrick Cummings
     Date created: 10/13/2019
-    Date last modified: 10/15/2019
+    Date last modified: 10/18/2019
     Python Version: 3.7
 
     Used to run linear regression without L2 regularization penalty for given learning rates.
     Trains model on training set, makes predictions and calculates sum-of-squared error on validation set.
-    Using normalized data sets here.
+    Using normalization.
     Outputs model results to /model_output/part_1.
 """
 

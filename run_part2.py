@@ -2,12 +2,12 @@
     File name: run_part2.py
     Author: Patrick Cummings
     Date created: 10/13/2019
-    Date last modified: 10/15/2019
+    Date last modified: 10/18/2019
     Python Version: 3.7
 
     Run linear regression with L2 regularization with grid search over given learning rates and penalties.
     Trains models on training set, makes predictions and calculates sum-of-squared errors on validation set.
-    Using normalized data sets here.
+    Using normalization.
     Outputs model results to /model_output/part_2.
 """
 

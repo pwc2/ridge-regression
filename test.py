@@ -2,7 +2,7 @@
     File name: test.py
     Author: Patrick Cummings
     Date created: 10/13/2019
-    Date last modified: 10/15/2019
+    Date last modified: 10/18/2019
     Python Version: 3.7
 
     Used to test instance of LinearModel() class.
@@ -24,12 +24,16 @@ model = LinearModel(train='data/PA1_train.pkl',
                     normalize=True)
 
 names = model.weight_labels
-learned_model = model.train_model(10)
+learned_model = model.train_model(5)
 val_predictions = model.predict_validation(learned_model['weights'])['predictions']
 test_predictions = model.predict_test((learned_model['weights']))['predictions']
 
-# pp.pprint(learned_model)
+# import inspect
+# pp.pprint(inspect.getmembers(LinearModel, lambda a:not(inspect.isroutine(a))))
+# pp.pprint(model.__dict__.keys())
 
+# print(learned_model)
+#
 # print(dict(zip(names, learned_model['weights'])))
-pp.pprint(val_predictions[:10])
-pp.pprint(test_predictions[:10])
+# pp.pprint(val_predictions[:10])
+# pp.pprint(test_predictions[:10])
