@@ -1,4 +1,3 @@
-scikit-learn
 progressbar2
 numpy
 pandas

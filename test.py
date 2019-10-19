@@ -33,7 +33,6 @@ test_predictions = model.predict_test((learned_model['weights']))['predictions']
 # pp.pprint(model.__dict__.keys())
 
 # print(learned_model)
-#
 # print(dict(zip(names, learned_model['weights'])))
 # pp.pprint(val_predictions[:10])
 # pp.pprint(test_predictions[:10])

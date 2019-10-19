@@ -49,6 +49,7 @@ def clean(input_file):
     out_path = my_path.with_suffix('.pkl')
     with open(out_path, 'wb') as f:
         pickle.dump(df, f, pickle.HIGHEST_PROTOCOL)
+    return
 
 
 # def normalize(pickled_df, train_max, train_min, target):

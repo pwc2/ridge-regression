@@ -18,7 +18,7 @@ import numpy as np
 
 from models.linear_model import LinearModel
 
-print('Part 2: Initializing training with regularization.')
+print('Part 2: Initializing training with regularization.\n')
 
 # Ignore overflows from learning rates with exploding gradient
 np.seterr(all='ignore')
@@ -30,22 +30,23 @@ rates = [10 ** -x for x in range(5, 8)]
 lambdas = sorted([10 ** x for x in range(-3, 3)] + [0])[4:]
 for rate in rates:
     for lam in lambdas:
-        model = LinearModel(train='data/PA1_train_norm.pkl',
-                            validation='data/PA1_dev_norm.pkl',
-                            test='data/PA1_test_norm.pkl',
+
+        model = LinearModel(train='data/PA1_train.pkl',
+                            validation='data/PA1_dev.pkl',
+                            test='data/PA1_test.pkl',
                             target='price',
                             rate=rate,
                             lam=lam,
                             eps=0.5,
                             normalize=True)
 
-        learned_model = model.train_model(max_iter=100000)
+        learned_model = model.train_model(max_iter=2)
 
         print('Training complete.\n')
 
         # Save output for learned model to .json file
         train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam)) + '_train.json'
-        my_path = pathlib.Path('model_output', 'part_2', train_filename)
+        my_path = pathlib.Path('..', 'model_output', 'part_2', train_filename)
         train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
         # Make output directory if doesn't exist
@@ -69,6 +70,6 @@ for rate in rates:
         with open(dev_path, 'w') as f:
             json.dump(predictions, f, indent=4)
 
-        print('Predictions complete.')
+        print('Predictions complete.\n')
 
 print('Part 2 complete.\n')

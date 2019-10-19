@@ -6,14 +6,11 @@
     Python Version: 3.7
 """
 
+import pathlib
 import pickle
 
 import numpy as np
-import pandas as pd
 import progressbar
-from sklearn.preprocessing import MinMaxScaler
-# from preprocess import preprocess
-import pathlib
 
 from models.gradient_descent import calc_sse, calc_predictions, calc_gradient, gradient_descent
 
@@ -69,8 +66,6 @@ class LinearModel:
 
         self.test_features = self.test
 
-
-
         if self.normalize is True:
             # Extract min, max, and range for training features
             self.train_feature_max = self.train_features.max()
@@ -94,7 +89,7 @@ class LinearModel:
             self.validation_features = self.validation_features.assign(dummy=1).set_index('dummy').reset_index()
             self.test_features = self.test_features.assign(dummy=1).set_index('dummy').reset_index()
 
-            # Save to .csv to check normalization if desired
+            # Save to .csv to ensure normalization runs correctly
             my_path = pathlib.Path(__file__).parent.joinpath(pathlib.Path('../data')).resolve()
             out_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
@@ -102,21 +97,8 @@ class LinearModel:
             self.validation_features.to_csv(out_path.joinpath(pathlib.Path('norm_dev_x.csv')))
             self.test_features.to_csv(out_path.joinpath(pathlib.Path('norm_test_x.csv')))
 
-            self.train_targets.to_csv(out_path.joinpath(pathlib.Path('norm_train_y.csv')),header = self.target)
+            self.train_targets.to_csv(out_path.joinpath(pathlib.Path('norm_train_y.csv')), header=self.target)
             self.validation_targets.to_csv(out_path.joinpath(pathlib.Path('norm_dev_y.csv')), header=self.target)
-
-
-            # self.train = preprocess.normalize(train, train_max, train_min, self.target)
-            # self.validation = preprocess.normalize(validation, train_max, train_min, self.target)
-            # self.test = preprocess.normalize(test, train_max, train_min, self.target)
-            # scaler = MinMaxScaler()
-            # scaled_train = scaler.fit_transform(self.train[train_cols])
-            # scaled_validation = scaler.transform(self.validation[train_cols])
-            # scaled_test = scaler.transform(self.test[train_cols])
-            #
-            # self.train = pd.DataFrame(scaled_train, columns=train_cols).assign(dummy=1)
-            # self.validation = pd.DataFrame(scaled_validation, columns=validation_cols).assign(dummy=1)
-            # self.test = pd.DataFrame(scaled_test, columns=test_cols).assign(dummy=1)
 
         self.weight_labels = self.train.columns.to_list()
 
@@ -135,21 +117,11 @@ class LinearModel:
             and sse (list with SSE for each iteration). Also includes gradient_norm_diff (normalized difference in
             gradient between iterations).
         """
-        # Training set and labels
-        # x = self.train.drop(self.target, axis=1).to_numpy(dtype=np.float64)
-        # y = self.train_targets.to_numpy(dtype=np.float64)
+        # Training and validation sets and labels
         x_train = self.train_features.to_numpy(dtype=np.float64)
         y_train = self.train_targets.to_numpy(dtype=np.float64)
-
-        # Validation set and labels
-        # x_val = self.validation.drop(self.target, axis=1).to_numpy(dtype=np.float64)
-        # y_val = self.validation_targets.to_numpy(dtype=np.float64)
         x_val = self.validation_features.to_numpy(dtype=np.float64)
         y_val = self.validation_targets.to_numpy(dtype=np.float64)
-
-        # Rescale target based on training, use these to rescale predictions
-        # y = (y - y.min()) / (y.max() - y.min())
-        # y_val = (y_val - y.min()) / (y.max() - y.min())
 
         rate = self.rate
         lam = self.lam
@@ -210,7 +182,7 @@ class LinearModel:
 
         # If we haven't converged by this point might as well stop and figure out why
         if iter_count == max_iter:
-            print('Maximum iterations reached without convergence.\n')
+            print('Maximum iterations reached without convergence.')
 
         labeled_weights = dict(zip(weight_labels, weights.tolist()))
 
@@ -240,8 +212,6 @@ class LinearModel:
             and SSE (SSE for predictions).
         """
         lam = self.lam
-        # x = self.validation.drop(self.target, axis=1).to_numpy(dtype=np.float64)
-        # y = self.validation_targets.to_numpy(dtype=np.float64)
         x_val = self.validation_features.to_numpy(dtype=np.float64)
         y_val = self.validation_targets.to_numpy(dtype=np.float64)
         predictions = calc_predictions(x_val, weights)
@@ -261,8 +231,6 @@ class LinearModel:
             results (dict): Dictionary with lam (regularization parameter) and predictions (list of predictions).
         """
         lam = self.lam
-        # max_train = self.train_target_max
-        # min_train = self.train_target_min
         x_test = self.test.to_numpy(dtype=np.float64)
         predictions = calc_predictions(x_test, weights)
         if self.normalize is True:

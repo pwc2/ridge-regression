@@ -18,7 +18,7 @@ import numpy as np
 
 from models.linear_model import LinearModel
 
-print('Part 1: Initializing training without regularization.')
+print('Part 1: Initializing training without regularization.\n')
 
 # Ignore overflows from learning rates with exploding gradient
 np.seterr(all='ignore')
@@ -37,13 +37,13 @@ for rate in rates:
                         eps=0.5,
                         normalize=True)
 
-    learned_model = model.train_model(max_iter=100000)
+    learned_model = model.train_model(max_iter=2)
 
-    print('Training complete.\n')
+    print('Training complete.')
 
     # Save output for learned model to .json file
     train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_train.json'
-    my_path = pathlib.Path('model_output', 'part_1', train_filename)
+    my_path = pathlib.Path('..', 'model_output', 'part_1', train_filename)
     train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
     # Make output directory if doesn't exist
@@ -69,6 +69,6 @@ for rate in rates:
         with open(dev_path, 'w') as f:
             json.dump(predictions, f, indent=4)
 
-        print('Predictions complete.')
+        print('Predictions complete.\n')
 
 print('Part 1 complete.\n')
