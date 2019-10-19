@@ -111,11 +111,12 @@ class LinearModel:
             max_iter (int): Maximum number of iterations before terminating training.
 
         Returns:
-            results (dict): Dictionary with lam (regularization parameter), learn_rate (learning rate), eps (epsilon
-            for convergence), iterations (number of iterations), convergence (T or F), exploding (if gradient
+            results (dict): Dictionary with lam (regularization parameter), learn_rate (learning rate),
+            epsilon  (epsilon for convergence), iterations (number of iterations), convergence (T or F), exploding (
+            if gradient
             explodes), labeled_weights (dict with {labels : weights}), weights (nd array of optimized weights),
-            and sse (list with SSE for each iteration). Also includes gradient_norm_diff (normalized difference in
-            gradient between iterations).
+            train_sse, validation_sse (list with SSE on each set for each iteration), and gradient_norm (list with
+            norm of gradient after each iteration).
         """
         # Training and validation sets and labels
         x_train = self.train_features.to_numpy(dtype=np.float64)
@@ -130,8 +131,8 @@ class LinearModel:
 
         print('Initializing training...')
 
-        # Initialize random weights sampled from uniform [0, 1) distribution.
-        weights = np.random.rand(np.size(x_train, axis=1))
+        # Initialize all weights as zero.
+        weights = np.zeros(np.size(x_train, axis=1))
 
         print('Learning rate = ' + str(rate) + ', penalty = ' + str(lam) + ', epsilon = ' + str(eps) + '.')
 
@@ -152,21 +153,21 @@ class LinearModel:
         # Perform batch gradient descent to optimize weights.
         for iteration in bar(range(max_iter)):
             # Calculate gradient and update weights
-            current_grad = calc_gradient(x_train, y_train, weights)
-            weights = gradient_descent(current_grad, weights, rate, lam)
+            gradient = calc_gradient(x_train, y_train, weights)
+            weights = gradient_descent(gradient, weights, rate, lam)
 
             # Calculate sum of squared error for each iteration to store in list.
             train_sse.append(calc_sse(x_train, y_train, weights, lam))
             val_sse.append(calc_sse(x_val, y_val, weights, lam))
 
             # Calculate norm of gradient to monitor for convergence.
-            grad_norm = np.sqrt(current_grad.dot(current_grad))
+            grad_norm = np.sqrt(gradient.dot(gradient))
             norm_list.append(grad_norm)
 
-            iter_count += 1
+            if iter_count % 1000 == 0:
+                print('\nGradient norm = ' + str(grad_norm) + '\n')
 
-            if iter_count % 100 == 0:
-                print('\n' + str(grad_norm) + '\n')
+            iter_count += 1
 
             # Check for divergence with the norm of the gradient to see if exploding.
             if np.isinf(grad_norm):
