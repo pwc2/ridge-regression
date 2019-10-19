@@ -24,12 +24,12 @@ model = LinearModel(train='data/PA1_train.pkl',
                     normalize=True)
 
 names = model.weight_labels
-learned_model = model.train_model(10000)
+learned_model = model.train_model(100)
 val_predictions = model.predict_validation(learned_model['weights'])['predictions']
 test_predictions = model.predict_test((learned_model['weights']))['predictions']
 
 # import inspect
-# pp.pprint(inspect.getmembers(LinearModel, lambda a:not(inspect.isroutine(a))))
+# pp.pprint(inspect.getmembers(LinearModel, lambda x:not(inspect.isroutine(x))))
 # pp.pprint(model.__dict__.keys())
 
 # print(learned_model)

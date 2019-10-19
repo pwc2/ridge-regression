@@ -23,9 +23,9 @@ print('Part 1: Initializing training without regularization.\n')
 # Ignore overflows from learning rates with exploding gradient.
 np.seterr(all='ignore')
 
-# Training - Part 1, exploring learning rates.
+# Training - Part 1, exploring learning rates without regularization.
 
-# Train model using each learning rate, save each training output to model_output/part_1 folder.
+lam = 0
 rates = [10 ** -x for x in range(8)]
 for rate in rates:
     model = LinearModel(train='data/PA1_train.pkl',
@@ -33,8 +33,8 @@ for rate in rates:
                         test='data/PA1_test.pkl',
                         target='price',
                         rate=rate,
-                        lam=0,
-                        eps=0.5,
+                        lam=lam,
+                        eps=2,
                         normalize=True)
 
     learned_model = model.train_model(max_iter=250000)
@@ -43,8 +43,8 @@ for rate in rates:
         print('Training complete.')
 
     # Save output for learned model to .json file.
-    train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_train.json'
-    my_path = pathlib.Path('..', 'model_output', 'part_1', train_filename)
+    filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam))
+    my_path = pathlib.Path('..', 'model_output', 'part_1', filename + '_train.json')
     train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
     # Make output directory if doesn't exist.
@@ -64,7 +64,7 @@ for rate in rates:
         predictions = model.predict_validation(weights)
 
         # Output for predictions and SSE for validation set.
-        dev_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_dev.json'
+        dev_filename = filename + '_dev.json'
         dev_path = train_path.with_name(dev_filename)
 
         with open(dev_path, 'w') as f:

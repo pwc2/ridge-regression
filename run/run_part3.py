@@ -25,16 +25,16 @@ np.seterr(all='ignore')
 
 # Training - Part 3, exploring training with non-normalized data.
 
+lam = 0
 rates = [10 ** -15, 10 ** -9, 10 ** -6, 10 ** -3, 0, 1]
 for rate in rates:
-
     model = LinearModel(train='data/PA1_train.pkl',
                         validation='data/PA1_dev.pkl',
                         test='data/PA1_test.pkl',
                         target='price',
                         rate=rate,
-                        lam=0,
-                        eps=0.5,
+                        lam=lam,
+                        eps=2,
                         normalize=False)
 
     learned_model = model.train_model(max_iter=10000)
@@ -43,8 +43,10 @@ for rate in rates:
         print('Training complete.')
 
     # Save output for learned model to .json file.
-    train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_train.json'
-    my_path = pathlib.Path('..', 'model_output', 'part_3', train_filename)
+    filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam))
+    # train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_train.json'
+    # train_filename = '_train.json'
+    my_path = pathlib.Path('..', 'model_output', 'part_3', filename + '_train.json')
     train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
     # Make output directory if doesn't exist.
@@ -62,7 +64,7 @@ for rate in rates:
     predictions = model.predict_validation(weights)
 
     # Output for predictions and SSE for validation set.
-    dev_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_dev.json'
+    dev_filename = filename + '_dev.json'
     dev_path = train_path.with_name(dev_filename)
 
     with open(dev_path, 'w') as f:
