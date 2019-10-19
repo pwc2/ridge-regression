@@ -46,9 +46,9 @@ In `run` module:
 
 - `run_part0.py` takes care of cleaning training, validation, and test sets.
 
-- `run_part1.py` normalizes data to [0,1] scale, and runs linear regression *without* L2 regularization penalty for given learning rates.
+- `run_part1.py` normalizes data to [0, 1] scale, and runs linear regression *without* L2 regularization penalty for given learning rates.
 
-- `run_part2.py` normalizes data to [0,1] scale, runs linear regression *with* L2 regularization with grid search over given learning rates and penalties.
+- `run_part2.py` normalizes data to [0, 1] scale, runs linear regression *with* L2 regularization with grid search over given learning rates and penalties.
 
 - `run_part3.py` no normalization, runs linear regression without L2 regularization penalty for given learning rates.
 

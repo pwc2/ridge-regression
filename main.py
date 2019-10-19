@@ -3,7 +3,7 @@
     File name: run.py
     Author: Patrick Cummings
     Date created: 10/15/2019
-    Date last modified: 10/15/2019
+    Date last modified: 10/18/2019
     Python Version: 3.7
 
     Run python run.py to execute pre-processing (part 0), training with normalization but no regularization (part 1),

@@ -20,7 +20,7 @@ from models.linear_model import LinearModel
 
 print('Part 1: Initializing training without regularization.\n')
 
-# Ignore overflows from learning rates with exploding gradient
+# Ignore overflows from learning rates with exploding gradient.
 np.seterr(all='ignore')
 
 # Training - Part 1, exploring learning rates.
@@ -39,14 +39,15 @@ for rate in rates:
 
     learned_model = model.train_model(max_iter=100000)
 
-    print('Training complete.')
+    if learned_model['exploding'] is False and learned_model['convergence'] is True:
+        print('Training complete.')
 
-    # Save output for learned model to .json file
+    # Save output for learned model to .json file.
     train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_train.json'
     my_path = pathlib.Path('..', 'model_output', 'part_1', train_filename)
     train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
-    # Make output directory if doesn't exist
+    # Make output directory if doesn't exist.
     output_dir = train_path.parent.resolve()
     if not pathlib.Path(output_dir).exists():
         pathlib.Path(output_dir).mkdir()
@@ -54,15 +55,15 @@ for rate in rates:
     with open(train_path, 'w') as f:
         json.dump(learned_model, f, indent=4)
 
-    # If gradient didn't explode, get predictions on validation set
+    # If gradient didn't explode, get predictions on validation set.
     if learned_model['exploding'] is False:
         print('Calculating predictions on validation set...')
 
-        # Grab weights to input to prediction method
+        # Grab weights to input to prediction method.
         weights = learned_model['weights']
         predictions = model.predict_validation(weights)
 
-        # Output for predictions and SSE for validation set
+        # Output for predictions and SSE for validation set.
         dev_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_dev.json'
         dev_path = train_path.with_name(dev_filename)
 

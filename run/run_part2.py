@@ -20,13 +20,12 @@ from models.linear_model import LinearModel
 
 print('Part 2: Initializing training with regularization.\n')
 
-# Ignore overflows from learning rates with exploding gradient
+# Ignore overflows from learning rates with exploding gradient.
 np.seterr(all='ignore')
 
 # Training - Part 2, adjusting regularization parameter to investigate effect on the model.
 
 rates = [10 ** -x for x in range(5, 8)]
-# rates = [10 ** -x for x in range(8)]
 lambdas = sorted([10 ** x for x in range(-3, 3)] + [0])[4:]
 for rate in rates:
     for lam in lambdas:
@@ -42,14 +41,15 @@ for rate in rates:
 
         learned_model = model.train_model(max_iter=100000)
 
-        print('Training complete.\n')
+        if learned_model['exploding'] is False and learned_model['convergence'] is True:
+            print('Training complete.')
 
-        # Save output for learned model to .json file
+        # Save output for learned model to .json file.
         train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam)) + '_train.json'
         my_path = pathlib.Path('..', 'model_output', 'part_2', train_filename)
         train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
-        # Make output directory if doesn't exist
+        # Make output directory if doesn't exist.
         output_dir = train_path.parent.resolve()
         if not pathlib.Path(output_dir).exists():
             pathlib.Path(output_dir).mkdir()
@@ -59,11 +59,11 @@ for rate in rates:
 
         print('Calculating predictions on validation set...')
 
-        # Grab weights to input to prediction method
+        # Grab weights to input to prediction method.
         weights = learned_model['weights']
         predictions = model.predict_validation(weights)
 
-        # Output for predictions and SSE for validation set
+        # Output for predictions and SSE for validation set.
         dev_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam)) + '_dev.json'
         dev_path = train_path.with_name(dev_filename)
 

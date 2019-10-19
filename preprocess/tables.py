@@ -34,7 +34,7 @@ def num_summary_csv(pickled_df):
     filename = pkl_path.stem
     output_file = out_path.joinpath(filename + '_num_summary.csv')
 
-    # Compute summary statistics, drop unnecessary ones, round, and output to .csv file
+    # Compute summary statistics, drop unnecessary ones, round, and output to .csv file.
     numeric_summary = df.describe(percentiles=[], include=[np.number]).drop(labels=['count', '50%'], axis=0)
     numeric_summary.to_csv(output_file, float_format='%.2f')
 
@@ -70,7 +70,7 @@ def cat_summary_csv(pickled_df):
 
     df = df.astype(convert)
 
-    # Get proportions (value_counts) individually for the three categorical features
+    # Get proportions (value_counts) individually for the three categorical features.
     waterfront_vc = pd.DataFrame(df['waterfront'].value_counts(normalize=True, sort=False) * 100).reset_index()
     waterfront_vc.columns = ['waterfront', 'percentage']
 
@@ -80,16 +80,16 @@ def cat_summary_csv(pickled_df):
     grade_vc = pd.DataFrame(df['grade'].value_counts(normalize=True, sort=False) * 100).reset_index()
     grade_vc.columns = ['grade', 'percentage']
 
-    # Join individual value counts back together in two separate joins
+    # Join individual value counts back together in two separate joins.
     int_join = grade_vc.join(condition_vc, how='outer', lsuffix='_grade', rsuffix='_condition')
     cat_table = int_join.join(waterfront_vc, how='outer', lsuffix='_condition', rsuffix='_waterfront')
 
-    # Needed this to get rid of the NaN's that are produced in the categorical features during the joins
+    # Needed this to get rid of the NaN's that are produced in the categorical features during the joins.
     cat_table['condition'] = cat_table['condition'].cat.add_categories('').fillna('')
     cat_table['waterfront'] = cat_table['waterfront'].cat.add_categories('').fillna('')
     cat_table.rename(columns={'percentage': 'percentage_waterfront'}, inplace=True)
 
-    # Also needed to get rid of NaN's in the percentage columns from the joins
+    # Also needed to get rid of NaN's in the percentage columns from the joins.
     cat_table['percentage_condition'] = cat_table['percentage_condition'].fillna(0).replace(0, '')
     cat_table['percentage_waterfront'] = cat_table['percentage_waterfront'].fillna(0).replace(0, '')
 

@@ -57,7 +57,7 @@ class LinearModel:
         self.eps = eps
         self.normalize = normalize
 
-        # Extract features and targets from train, validation, and test sets
+        # Extract features and targets from train, validation, and test sets.
         self.train_features = self.train.drop(target, axis=1)
         self.train_targets = self.train[target]
 
@@ -67,29 +67,29 @@ class LinearModel:
         self.test_features = self.test
 
         if self.normalize is True:
-            # Extract min, max, and range for training features
+            # Extract min, max, and range for training features.
             self.train_feature_max = self.train_features.max()
             self.train_feature_min = self.train_features.min()
             self.train_feature_range = self.train_feature_max - self.train_feature_min
-            # Normalize all features wrt to training set
+            # Normalize all features wrt to training set.
             self.train_features = (self.train_features - self.train_feature_min) / self.train_feature_range
             self.validation_features = (self.validation_features - self.train_feature_min) / self.train_feature_range
             self.test_features = (self.test_features - self.train_feature_min) / self.train_feature_range
 
-            # Extract min, max, and range for training targets
+            # Extract min, max, and range for training targets.
             self.train_target_max = self.train_targets.max()
             self.train_target_min = self.train_targets.min()
             self.train_target_range = self.train_target_max - self.train_target_min
-            # Normalize all targets wrt to training targets
+            # Normalize all targets wrt to training targets.
             self.train_targets = (self.train_targets - self.train_target_min) / self.train_target_range
             self.validation_targets = (self.validation_targets - self.train_target_min) / self.train_target_range
 
-            # Reset dummy variable for intercept to 1
+            # Reset dummy variable for intercept to 1.
             self.train_features = self.train_features.assign(dummy=1).set_index('dummy').reset_index()
             self.validation_features = self.validation_features.assign(dummy=1).set_index('dummy').reset_index()
             self.test_features = self.test_features.assign(dummy=1).set_index('dummy').reset_index()
 
-            # Save to .csv to ensure normalization runs correctly
+            # Save to .csv to ensure normalization runs correctly.
             my_path = pathlib.Path(__file__).parent.joinpath(pathlib.Path('../data')).resolve()
             out_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
@@ -130,7 +130,7 @@ class LinearModel:
 
         print('Initializing training...')
 
-        # Initialize random weights sampled from uniform [0, 1) distribution
+        # Initialize random weights sampled from uniform [0, 1) distribution.
         weights = np.random.rand(np.size(x_train, axis=1))
 
         print('Learning rate = ' + str(rate) + ', penalty = ' + str(lam) + ', epsilon = ' + str(eps) + '.')
@@ -149,40 +149,40 @@ class LinearModel:
         exploding_grad = False
         converge = False
 
-        # Perform batch gradient descent to optimize weights
+        # Perform batch gradient descent to optimize weights.
         for iteration in bar(range(max_iter)):
             # Calculate gradient and update weights
             current_grad = calc_gradient(x_train, y_train, weights)
             weights = gradient_descent(current_grad, weights, rate, lam)
 
-            # Calculate sum of squared error for each iteration to store in list
+            # Calculate sum of squared error for each iteration to store in list.
             train_sse.append(calc_sse(x_train, y_train, weights, lam))
             val_sse.append(calc_sse(x_val, y_val, weights, lam))
 
-            # Calculate norm of gradient to monitor for convergence
+            # Calculate norm of gradient to monitor for convergence.
             grad_norm = np.sqrt(current_grad.dot(current_grad))
             norm_list.append(grad_norm)
 
             iter_count += 1
 
-            # if iter_count % 100 == 0:
-            #     print('\n' + str(grad_norm))
+            if iter_count % 100 == 0:
+                print('\n' + str(grad_norm) + '\n')
 
-            # Check for divergence with the norm of the gradient to see if exploding
+            # Check for divergence with the norm of the gradient to see if exploding.
             if np.isinf(grad_norm):
-                print('\nGradient exploding.')
+                print('\nGradient exploding.\n')
                 exploding_grad = True
                 break
 
-            # Check for convergence using the norm of the difference in current and previous gradients
+            # Check for convergence using the norm of the gradient.
             if grad_norm <= eps:
                 print('\nConvergence achieved with epsilon = ' + str(eps) + ' in ' + str(iteration) + ' iterations.')
                 converge = True
                 break
 
-        # If we haven't converged by this point might as well stop and figure out why
+        # If we haven't converged by this point might as well stop and figure out why.
         if iter_count == max_iter:
-            print('Maximum iterations reached without convergence.')
+            print('Maximum iterations reached without convergence.\n')
 
         labeled_weights = dict(zip(weight_labels, weights.tolist()))
 

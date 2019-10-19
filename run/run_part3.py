@@ -2,7 +2,7 @@
     File name: run_part3.py
     Author: Patrick Cummings
     Date created: 10/13/2019
-    Date last modified: 10/15/2019
+    Date last modified: 10/18/2019
     Python Version: 3.7
 
     Used to run linear regression without L2 regularization penalty for given learning rates.
@@ -20,7 +20,7 @@ from models.linear_model import LinearModel
 
 print('Part 3: Initializing training without regularization, without normalizing features.\n')
 
-# Ignore overflows from learning rates with exploding gradient
+# Ignore overflows from learning rates with exploding gradient.
 np.seterr(all='ignore')
 
 # Training - Part 3, exploring training with non-normalized data.
@@ -39,14 +39,15 @@ for rate in rates:
 
     learned_model = model.train_model(max_iter=10000)
 
-    print('Training complete.')
+    if learned_model['exploding'] is False and learned_model['convergence'] is True:
+        print('Training complete.')
 
-    # Save output for learned model to .json file
+    # Save output for learned model to .json file.
     train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_train.json'
     my_path = pathlib.Path('..', 'model_output', 'part_3', train_filename)
     train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 
-    # Make output directory if doesn't exist
+    # Make output directory if doesn't exist.
     output_dir = train_path.parent.resolve()
     if not pathlib.Path(output_dir).exists():
         pathlib.Path(output_dir).mkdir()
@@ -56,11 +57,11 @@ for rate in rates:
 
     print('Calculating predictions on validation set...')
 
-    # Grab weights to input to prediction method
+    # Grab weights to input to prediction method.
     weights = learned_model['weights']
     predictions = model.predict_validation(weights)
 
-    # Output for predictions and SSE for validation set
+    # Output for predictions and SSE for validation set.
     dev_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_dev.json'
     dev_path = train_path.with_name(dev_filename)
 
