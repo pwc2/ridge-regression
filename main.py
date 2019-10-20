@@ -11,3 +11,10 @@
     regularization (part 3).
 """
 
+from run import run_part0
+
+from run import run_part1
+
+from run import run_part2
+
+from run import run_part3
