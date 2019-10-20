@@ -164,11 +164,6 @@ class LinearModel:
             grad_norm = np.sqrt(gradient.dot(gradient))
             norm_list.append(grad_norm)
 
-            # if iter_count % 1000 == 0:
-            #     print('\nGradient norm = ' + str(grad_norm))
-            #
-            # iter_count += 1
-
             # Check for divergence with the norm of the gradient to see if exploding.
             if np.isinf(grad_norm):
                 print('\nGradient exploding.\n')
@@ -182,7 +177,7 @@ class LinearModel:
                 break
 
             # Check that gradient is still decreasing sufficiently
-            if iter_count > 10000 and abs(norm_list[-2] - norm_list[-1]) < 1e-05:
+            if iter_count > 10000 and abs(norm_list[-2] - norm_list[-1]) < 1e-06:
                 print('\nGradient not decreasing significantly.')
                 converge = True
                 break
@@ -238,12 +233,12 @@ class LinearModel:
             results (dict): Dictionary with lam (regularization parameter) and predictions (list of predictions).
         """
         lam = self.lam
-        x_test = self.test.to_numpy(dtype=np.float64)
+        x_test = self.test_features.to_numpy(dtype=np.float64)
         predictions = calc_predictions(x_test, weights)
         if self.normalize is True:
-            target_range = self.train_target_range
+            target_max = self.train_target_max
             target_min = self.train_target_min
-            predictions = [target_range * pred + target_min for pred in predictions]
+            predictions = [pred * (target_max - target_min) + target_min for pred in predictions]
         results = {'lam': lam,
                    'predictions': predictions}
         return results

@@ -83,9 +83,7 @@ def gradient_descent(grad, weights, rate, lam):
     Returns:
         weights (ndarray): Returns (, m) ndarray of updated weights.
     """
-    # weights[0] -= rate * grad[0]
     weights[0] = weights[0] - rate * grad[0]
     for j in range(1, len(weights)):
         weights[j] -= rate * (grad[j] + lam * weights[j])
-        # weights[j] = weights[j] - rate * grad[j] - rate * lam * weights[j]
     return weights
