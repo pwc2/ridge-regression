@@ -37,7 +37,7 @@ for rate in rates:
                         eps=2,
                         normalize=True)
 
-    learned_model = model.train_model(max_iter=250000)
+    learned_model = model.train_model(max_iter=50000)
 
     if learned_model['exploding'] is False and learned_model['convergence'] is True:
         print('Training complete.')
