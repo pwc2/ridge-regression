@@ -44,8 +44,6 @@ for rate in rates:
 
     # Save output for learned model to .json file.
     filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam))
-    # train_filename = 'rate_' + str('{:.0E}'.format(rate)) + '_train.json'
-    # train_filename = '_train.json'
     my_path = pathlib.Path('..', 'model_output', 'part_3', filename + '_train.json')
     train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
 

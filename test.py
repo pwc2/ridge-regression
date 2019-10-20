@@ -24,7 +24,7 @@ model = LinearModel(train='data/PA1_train.pkl',
                     normalize=True)
 
 names = model.weight_labels
-learned_model = model.train_model(100)
+learned_model = model.train_model(1000000)
 val_predictions = model.predict_validation(learned_model['weights'])['predictions']
 test_predictions = model.predict_test((learned_model['weights']))['predictions']
 

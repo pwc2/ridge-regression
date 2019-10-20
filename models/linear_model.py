@@ -132,7 +132,7 @@ class LinearModel:
         print('Initializing training...')
 
         # Initialize all weights as zero.
-        weights = np.zeros(np.size(x_train, axis=1))
+        weights = np.zeros(np.size(x_train, axis=1), dtype=np.float64)
 
         print('Learning rate = ' + str(rate) + ', penalty = ' + str(lam) + ', epsilon = ' + str(eps) + '.')
 
@@ -164,10 +164,10 @@ class LinearModel:
             grad_norm = np.sqrt(gradient.dot(gradient))
             norm_list.append(grad_norm)
 
-            if iter_count % 1000 == 0:
-                print('\nGradient norm = ' + str(grad_norm) + '\n')
-
-            iter_count += 1
+            # if iter_count % 1000 == 0:
+            #     print('\nGradient norm = ' + str(grad_norm))
+            #
+            # iter_count += 1
 
             # Check for divergence with the norm of the gradient to see if exploding.
             if np.isinf(grad_norm):
@@ -178,6 +178,12 @@ class LinearModel:
             # Check for convergence using the norm of the gradient.
             if grad_norm <= eps:
                 print('\nConvergence achieved with epsilon = ' + str(eps) + ' in ' + str(iteration) + ' iterations.')
+                converge = True
+                break
+
+            # Check that gradient is still decreasing sufficiently
+            if iter_count > 10000 and abs(norm_list[-2] - norm_list[-1]) < 1e-05:
+                print('\nGradient not decreasing significantly.')
                 converge = True
                 break
 
