@@ -12,7 +12,7 @@ import pickle
 import numpy as np
 import progressbar
 
-from models.gradient_descent import calc_sse, calc_predictions, calc_gradient, gradient_descent
+from models.gradient_descent import compute_sse, predict, compute_gradient, gradient_descent
 
 
 class LinearModel:
@@ -71,6 +71,7 @@ class LinearModel:
             self.train_feature_max = self.train_features.max()
             self.train_feature_min = self.train_features.min()
             self.train_feature_range = self.train_feature_max - self.train_feature_min
+
             # Normalize all features wrt to training set.
             self.train_features = (self.train_features - self.train_feature_min) / self.train_feature_range
             self.validation_features = (self.validation_features - self.train_feature_min) / self.train_feature_range
@@ -80,6 +81,7 @@ class LinearModel:
             self.train_target_max = self.train_targets.max()
             self.train_target_min = self.train_targets.min()
             self.train_target_range = self.train_target_max - self.train_target_min
+
             # Normalize all targets wrt to training targets.
             self.train_targets = (self.train_targets - self.train_target_min) / self.train_target_range
             self.validation_targets = (self.validation_targets - self.train_target_min) / self.train_target_range
@@ -153,12 +155,12 @@ class LinearModel:
         # Perform batch gradient descent to optimize weights.
         for iteration in bar(range(max_iter)):
             # Calculate gradient and update weights
-            gradient = calc_gradient(x_train, y_train, weights)
+            gradient = compute_gradient(x_train, y_train, weights)
             weights = gradient_descent(gradient, weights, rate, lam)
 
             # Calculate sum of squared error for each iteration to store in list.
-            train_sse.append(calc_sse(x_train, y_train, weights, lam))
-            val_sse.append(calc_sse(x_val, y_val, weights, lam))
+            train_sse.append(compute_sse(x_train, y_train, weights, lam))
+            val_sse.append(compute_sse(x_val, y_val, weights, lam))
 
             # Calculate norm of gradient to monitor for convergence.
             grad_norm = np.sqrt(gradient.dot(gradient))
@@ -185,8 +187,8 @@ class LinearModel:
         # If we haven't converged by this point might as well stop and figure out why.
         if iter_count == max_iter:
             print('Maximum iterations reached without convergence.\n')
-
-        labeled_weights = dict(zip(weight_labels, weights.tolist()))
+        weights = weights.tolist()
+        labeled_weights = dict(zip(weight_labels, weights))
 
         results = {'lam': lam,
                    'learn_rate': rate,
@@ -195,7 +197,7 @@ class LinearModel:
                    'convergence': converge,
                    'exploding': exploding_grad,
                    'labeled_weights': labeled_weights,
-                   'weights': weights.tolist(),
+                   'weights': weights,
                    'train_sse': train_sse,
                    'validation_sse': val_sse,
                    'gradient_norm': norm_list}
@@ -216,8 +218,8 @@ class LinearModel:
         lam = self.lam
         x_val = self.validation_features.to_numpy(dtype=np.float64)
         y_val = self.validation_targets.to_numpy(dtype=np.float64)
-        predictions = calc_predictions(x_val, weights)
-        sse = calc_sse(x_val, y_val, weights, lam)
+        predictions = predict(x_val, weights)
+        sse = compute_sse(x_val, y_val, weights, lam)
         results = {'lam': lam,
                    'SSE': sse,
                    'predictions': predictions}
@@ -234,7 +236,7 @@ class LinearModel:
         """
         lam = self.lam
         x_test = self.test_features.to_numpy(dtype=np.float64)
-        predictions = calc_predictions(x_test, weights)
+        predictions = predict(x_test, weights)
         if self.normalize is True:
             target_max = self.train_target_max
             target_min = self.train_target_min

@@ -9,8 +9,8 @@
     clean() function to clean data by splitting date feature into month, day, and year. Drops ID and date columns.
  """
 
-import pathlib
 import pickle
+from pathlib import Path
 
 import pandas as pd
 
@@ -45,7 +45,7 @@ def clean(input_file):
     df = df.set_index('dummy').reset_index()
 
     # Get path to output clean pickled DataFrame.
-    my_path = pathlib.Path(input_file).resolve()
+    my_path = Path(input_file).resolve()
     out_path = my_path.with_suffix('.pkl')
     with open(out_path, 'wb') as f:
         pickle.dump(df, f, pickle.HIGHEST_PROTOCOL)

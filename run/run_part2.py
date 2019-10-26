@@ -12,7 +12,7 @@
 """
 
 import json
-import pathlib
+from pathlib import Path
 
 import numpy as np
 
@@ -37,20 +37,20 @@ for lam in lambdas:
                         eps=2.5,
                         normalize=True)
 
-    learned_model = model.train_model(max_iter=50000)
+    learned_model = model.train_model(max_iter=10000)
 
     if learned_model['exploding'] is False and learned_model['convergence'] is True:
         print('Training complete.')
 
     # Save output for learned model to .json file.
     filename = 'rate_' + str('{:.0E}'.format(rate)) + '_lam_' + str('{:.0E}'.format(lam))
-    my_path = pathlib.Path('..', 'model_output', 'part_2', filename + '_train.json')
-    train_path = pathlib.Path(__file__).parent.resolve().joinpath(my_path)
+    my_path = Path('..', 'model_output', 'part_2', filename + '_train.json')
+    train_path = Path(__file__).parent.resolve().joinpath(my_path)
 
     # Make output directory if doesn't exist.
     output_dir = train_path.parent.resolve()
-    if not pathlib.Path(output_dir).exists():
-        pathlib.Path(output_dir).mkdir()
+    if not Path(output_dir).exists():
+        Path(output_dir).mkdir()
 
     with open(train_path, 'w') as f:
         json.dump(learned_model, f, indent=4)

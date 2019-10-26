@@ -6,16 +6,16 @@
     Python Version: 3.7
 
     Contains functions for training and evaluating linear regression model.
-    calc_predictions() to calculate predictions on test or validation sets.
-    calc_sse() to calculate sum-of-squared error on predictions.
-    calc_gradient() to calculate the gradient of the weights during training.
+    predict() to calculate predictions on test or validation sets.
+    compute_sse() to calculate sum-of-squared error on predictions.
+    compute_gradient() to calculate the gradient of the weights during training.
     gradient_descent() to update weights during training.
 """
 
 import numpy as np
 
 
-def calc_predictions(x, weights):
+def predict(x, weights):
     """Calculates predicted values using given weights.
 
     Args:
@@ -33,7 +33,7 @@ def calc_predictions(x, weights):
     return predictions
 
 
-def calc_sse(x, y, weights, lam):
+def compute_sse(x, y, weights, lam):
     """Calculate sum-of-squared errors (SSE) for predictions with L2 (quadratic) regularizer.
 
     Args:
@@ -46,14 +46,14 @@ def calc_sse(x, y, weights, lam):
         float: Sum of squared errors for predictions.
     """
     weights = np.array(weights, dtype=np.float64)
-    y_pred = calc_predictions(x, weights)
+    y_pred = predict(x, weights)
     sse = 0
     for i in range(np.size(x, axis=0)):
         sse += (y[i] - y_pred[i]) ** 2 + (lam * weights.dot(weights) ** 2)
     return float(sse)
 
 
-def calc_gradient(x, y, weights):
+def compute_gradient(x, y, weights):
     """Calculates gradient for SSE loss function, without L2 regularization term.
 
     Args:
