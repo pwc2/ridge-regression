@@ -34,10 +34,10 @@ for rate in rates:
                         target='price',
                         rate=rate,
                         lam=lam,
-                        eps=2,
+                        eps=10000,
                         normalize=True)
 
-    learned_model = model.train_model(max_iter=10000)
+    learned_model = model.train_model(max_iter=2)
 
     if learned_model['exploding'] is False and learned_model['convergence'] is True:
         print('Training complete.')

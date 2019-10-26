@@ -46,7 +46,7 @@ with open(pred_file_path, 'w') as f:
         f.write('%s\n' % prediction)
 
 # import inspect
-# pp.pprint(inspect.getmembers(LinearModel, lambda x:not(inspect.isroutine(x))))
+# pp.pprint(inspect.getmembers(LinearModel, lambda X:not(inspect.isroutine(X))))
 # pp.pprint(model.__dict__.keys())
 
 # print(learned_model)
