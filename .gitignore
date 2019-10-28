@@ -8,3 +8,13 @@
 /Report.pdf
 /Report.Rmd
 /ridge-regression.Rproj
+/predictions.txt
+/model_output/predictions.pkl
+/data/norm_dev_x.csv
+/data/norm_dev_y.csv
+/data/norm_test_x.csv
+/data/norm_train_x.csv
+/data/norm_train_y.csv
+/data/PA1_dev.pkl
+/data/PA1_test.pkl
+/data/PA1_train.pkl

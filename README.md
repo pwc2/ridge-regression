@@ -2,7 +2,7 @@
 
 `ridge-regression` is an implementation of linear regression with L2 regularization that uses batch gradient descent to optimize weights.
 
-## Requirements:
+### Requirements:
 
 - `numpy 1.17.2`
 
@@ -10,7 +10,7 @@
 
 - `progressbar2 3.37.1`
 
-## Usage:
+### Usage:
 
 ```python
 from models.linear_model import LinearModel
@@ -30,17 +30,11 @@ val_predictions = model.predict_validation(learned_model['weights'])['prediction
 test_predictions = model.predict_test((learned_model['weights']))['predictions'] # Get predictions on test set
 ```
 
-## Data:
+### Data:
 
-In `data/` folder:
+The `data/` folder contains .csv files with training, validation, and test sets.
 
-- `PA1_train.csv` contains training set with targets.
-
-- `PA1_dev.csv` contains validation set with targets.
-
-- `PA1_test.csv` contains test set without targets.
-
-## To run models:
+### To run models:
 
 In `run` module:
 
@@ -52,4 +46,4 @@ In `run` module:
 
 - `run_part3.py` no normalization, runs linear regression without L2 regularization penalty for given learning rates.
 
-Use `python main.py` to run parts 0 through 3.
+Use `python main.py` to run all four parts.

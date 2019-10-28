@@ -19,8 +19,8 @@ def predict(X, weights):
     """Calculates predicted values using given weights.
 
     Args:
-        X (ndarray): (n X m) ndarray of n observations on m features
-        weights (ndarray): (1 X m) ndarray of m weights from learned model.
+        X (ndarray): (n x m) ndarray of n observations on m features
+        weights (ndarray): (1 x m) ndarray of m weights from learned model.
 
     Returns:
         list of float: List of predicted values.
@@ -38,7 +38,7 @@ def compute_sse(X, y, weights, lam):
 
     Args:
         X (ndarray): (n, m) ndarray of n observations on m features.
-        y (ndarray): (, n) or (n X 1) ndarray of n true response values for observations.
+        y (ndarray): (, n) or (n x 1) ndarray of n true response values for observations.
         weights (ndarray): (, m) ndarray of m weights from learned model.
         lam (float): regularization parameter.
 
